@@ -1,6 +1,5 @@
 # LiRaPoc:  Targetless Extrinsic Calibration of LiDAR and Radar with Spatial Consistency of Polar Occupancy
 ## Absract
-## Run 
 Owing to the capability for reliable and all-weather long-range sensing, the fusion of Radar and LiDAR has been
 widely applied to autonomous vehicles for robust perception. In practical operation, well manually calibrated extrinsic parameters, which are crucial for the fusion of multi-modal sensors, may drift due to the vibration. To address this issue, we present
 a novel targetless calibration approach, termed LiRaCo, for the extrinsic calibration of LiDAR and Radar sensors. Although
@@ -15,6 +14,7 @@ finally estimated by optimizing the cost function. Comprehensive
 quantitative and qualitative experiments on two real outdoor
 datasets with different LiDAR sensors demonstrate the feasibility
 and accuracy of the proposed method.
+## Run 
 ```
 python lirapoc.py --dataset boreas --datapath MY_PATH/LiRaPoc/data/boreas/ --datasequence boreas_example --method LiRaPoc
 ```
