@@ -19,7 +19,7 @@ and accuracy of the proposed method.
 pip install -r requirements.txt
 ```
 ## Run
-We provide 10 pairs example of LiDAR and Radar data on boreas dataset. Initially, LiDAR point is transformed by [1m,1m,1m] translation and [2°,2°,2°] rotation for test. That is to say, the calibration result should be [-1m,-1m,-1m,-2°,-2°,-2°].
+We provide 10-pair examples of LiDAR and Radar data on boreas dataset. Initially, LiDAR point is transformed by [1m,1m,1m] translation and [2°,2°,2°] rotation for test. That is to say, the calibration result should be [-1m,-1m,-1m,-2°,-2°,-2°].
 ```The real result should be
 python lirapoc.py --dataset boreas --datapath MY_PATH/LiRaPoc/data/boreas/ --datasequence boreas_example --method LiRaPoc
 ```
