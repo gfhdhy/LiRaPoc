@@ -23,6 +23,6 @@ pip install -r requirements.txt
 python lirapoc.py --dataset boreas --datapath MY_PATH/LiRaPoc/data/boreas/ --datasequence boreas_example --method LiRaPoc
 ```
 method opt: 
---method LiRaPoc (ours )/ 
+--method LiRaPoc (ours) / 
 --method icp / 
 --method mt (match template)
