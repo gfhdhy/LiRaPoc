@@ -19,7 +19,7 @@ and accuracy of the proposed method.
 pip install -r requirements.txt
 ```
 ## Run
-We provide 10 pairs of LiDAR and Radar data on boreas dataset.
+We provide 10 pairs of LiDAR and Radar data on boreas dataset. The initial value is set [1m,1m,1m] for translation and [2°,2°,2°] for rotation.
 ```
 python lirapoc.py --dataset boreas --datapath MY_PATH/LiRaPoc/data/boreas/ --datasequence boreas_example --method LiRaPoc
 ```
