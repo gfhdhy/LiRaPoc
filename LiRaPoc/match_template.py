@@ -8,8 +8,8 @@ def match_template(lidars,radars):
     for i in range(frames):
         lidar = lidars[i]
         radar = radars[i]
-        lidar_bev = bev(lidar,'vis_mt/'+str(i)+'lidar.jpg',mode = 'car',delta_l=0.4, pixel_l=490)
-        radar_bev = bev(radar,'vis_mt/'+str(i)+'radar.jpg')
+        lidar_bev = bev(lidar,mode = 'car',delta_l=0.4, pixel_l=490)
+        radar_bev = bev(radar)
         result = cv2.matchTemplate(lidar_bev,radar_bev,cv2.TM_CCOEFF)
         (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(result)
         maxLoc = np.array(maxLoc)
