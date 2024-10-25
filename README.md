@@ -14,7 +14,11 @@ finally estimated by optimizing the cost function. Comprehensive
 quantitative and qualitative experiments on two real outdoor
 datasets with different LiDAR sensors demonstrate the feasibility
 and accuracy of the proposed method.
-## Run 
+## Installation
+```
+pip install -r requirements.txt
+```
+## Run
 ```
 python lirapoc.py --dataset boreas --datapath MY_PATH/LiRaPoc/data/boreas/ --datasequence boreas_example --method LiRaPoc
 ```
