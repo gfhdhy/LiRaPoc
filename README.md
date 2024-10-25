@@ -2,14 +2,10 @@
 ## Absract
 ## Run 
 Owing to the capability for reliable and all-weather long-range sensing, the fusion of Radar and LiDAR has been
-widely applied to autonomous vehicles for robust perception. In practical operation, well manually calibrated extrinsic parameters, which are crucial for the fusion of multi-modal sensors, may drift due to the vibration. To address this issue, we present
+widely applied to autonomous vehicles for robust perception. In practical operation, well manually calibrated extrinsic parameters, which are crucial for the fusion of multi-modal sensors, may drift due to the vibration. To address this issue, we present
 a novel targetless calibration approach, termed LiRaCo, for the extrinsic calibration of LiDAR and Radar sensors. Although
-both types of sensors can obtain geometric information, bridging the geometric correspondences between multi-modal data
-without any clues of explicit artificial markers is nontrivial,
-mainly due to the low vertical resolution of Radar. To achieve
-the targetless calibration, LiRaCo utilizes a spatial occupancy
-consistency between LiDAR point clouds and Radar scans in
-a common cylindrical representation, considering the working
+both types of sensors can obtain geometric information, bridging the geometric correspondences between multi-modal data
+without any clues of explicit artificial markers is nontrivial,mainly due to the low vertical resolution of Radar. To achieve the targetless calibration, LiRaCo utilizes a spatial occupancyconsistency between LiDAR point clouds and Radar scans in a common cylindrical representation, considering the working
 principles of two sensors. Specifically, LiRaCo expands valid
 Radar pixel into 3D occupancy grid to constrain LiDAR point
 clouds based on spatial consistency. Consequently, a cost function
