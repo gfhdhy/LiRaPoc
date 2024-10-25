@@ -19,6 +19,7 @@ and accuracy of the proposed method.
 pip install -r requirements.txt
 ```
 ## Run
+We provide 10 pairs of LiDAR and Radar data from boreas dataset.
 ```
 python lirapoc.py --dataset boreas --datapath MY_PATH/LiRaPoc/data/boreas/ --datasequence boreas_example --method LiRaPoc
 ```
