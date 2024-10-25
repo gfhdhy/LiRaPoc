@@ -14,23 +14,19 @@ def read_bin_lidar(path):
         # 几个f几维
         pc_iter=struct.iter_unpack('ffff',content)
         for idx,point in enumerate(pc_iter):
-            pc_list.append([point[0],point[1],-point[2],point[3]])
+            pc_list.append([point[0],point[1],point[2],point[3]])
+            # pc_list.append([point[0],point[1],-point[2],point[3]])
     return np.asarray(pc_list,dtype=np.float32)
 
-def removal_ground(lidar,segment_x = 20):
-    d = pow(lidar[:, 0] ** 2 + lidar[:, 1] ** 2, 0.5)
-    lidar_data_in = lidar[d <= segment_x, :]
-    lidar_data_out = lidar[d > segment_x, :]
-    indices,_ = my_ransac_v2(lidar_data_in[:, :3])
-    lidar_data_in[indices, :] = 0
-    idx = lidar_data_in[:, 2] > 0
-    lidar_data_in = lidar_data_in[idx, :]
-    lidar = np.vstack((lidar_data_in, lidar_data_out))
-    return lidar
 
 def read_radar(radar_name,threshhold=[50,55]):
     radar = cv2.imread(radar_name)
     w,h,num = radar.shape
+    #radar = radar[::-1,:]
+    # radar_ = np.zeros_like(radar)
+    # radar_[:int(w/2),:] = radar[int(w/2):w,:]
+    # radar_[int(w/2):w,:] = radar[:int(w/2),:]
+    radar = radar
     points = []
     occupancy_num = [0,0,0]
     for i in range(w):
@@ -45,8 +41,8 @@ def read_radar(radar_name,threshhold=[50,55]):
                     occupancy_num[2] = occupancy_num[2] + 1
             
             #r = i/w*100*10
-            theta = (i+0.5) / w * 360
-            r = (j+0.5)/h*165
+            theta = (i) / w * 360
+            r = (j)/h*165.04
             #z = np.tan(0.9 / 180 * np.pi) * r
             z = np.tan(0.9 / 180 * np.pi) * r
             #z = np.tan(0.65 / 180 * np.pi) * r
@@ -105,7 +101,6 @@ def read_lidar(lidar_name):
     LidarToRadar = calibration(x_t, y_t, z_t, x_r, y_r, z_r)
     Calibration = True
     lidar_points = np.zeros_like(lidar_data)
-    lidar_points[:, 2:] = lidar_data[:, 2:]
     if Calibration == True:
         x = lidar_data[:, 0]
         y = lidar_data[:, 1]
@@ -113,6 +108,7 @@ def read_lidar(lidar_name):
         lidar_points[:, 0] = LidarToRadar[0][0] * x + LidarToRadar[0][1] * y + LidarToRadar[0][2] * z + LidarToRadar[0][3]
         lidar_points[:, 1] = LidarToRadar[1][0] * x + LidarToRadar[1][1] * y + LidarToRadar[1][2] * z + LidarToRadar[1][3]
         lidar_points[:, 2] = LidarToRadar[2][0] * x + LidarToRadar[2][1] * y + LidarToRadar[2][2] * z + LidarToRadar[2][3]
+        lidar_points[:, 3:] = lidar_data[:, 3:]
     else:
         lidar_points =  lidar_data
     return lidar_points
@@ -122,7 +118,6 @@ def car2polar(lidar_data):
     lidar_polar[:, 1] = np.arctan2(lidar_data[:, 0], lidar_data[:, 1]) / np.pi * 180 + 90
     lidar_polar[lidar_polar[:, 1] < 0] = lidar_polar[lidar_polar[:, 1] < 0] + 360
     lidar_polar[lidar_polar[:, 1] >= 360] = 360-1
-    #lidar_polar[:, 0] = np.sqrt(lidar_data[:, 0] * lidar_data[:, 0] + lidar_data[:, 1] * lidar_data[:, 1]) * 10
     lidar_polar[:, 0] = np.sqrt(lidar_data[:, 0] * lidar_data[:, 0] + lidar_data[:, 1] * lidar_data[:, 1])
     lidar_polar[:, 2:5] = lidar_data[:, 2:5]
     lidar_polar = np.array(lidar_polar)
@@ -136,10 +131,12 @@ def polar2car(radar_data):
     return radar_car
 
 def set_radar_boundary(points,range):
+    # remove radar points out of boundary (according to the distance from point to center)
     points = points[points[:,0] <= range, :]   
     return points
 
 def set_lidar_boundary(points,range):
+    # remove lidar points out of boundary
     r = np.sqrt(points[:,0]*points[:,0]  + points[:,1]*points[:,1])
     points = points[r <= range, :]   
     return points
@@ -152,18 +149,15 @@ def read_orr_data_one_frame(n,filenames,lidar_root_dir,radar_root_dir,maxRange):
     ## read radar ##
     radar_threshhold=[50,55]
     radar_point = read_radar(radar_path,radar_threshhold)
-    #radar_grid = radar_occupancy_grid(radar_points)
     radar_point = radar_point[radar_point[:,4] == 2]
     radar_point = set_radar_boundary(radar_point, maxRange)
     radar_car = polar2car(radar_point)
-    #radar_points N*5: r, theta, z,intensity,occupancy
+    # radar_points N*5: r, theta, z,intensity,occupancy
        
     ## read lidar ##
     lidar_point = read_lidar(lidar_path)
     lidar_point = set_lidar_boundary(lidar_point, maxRange)
-    #lidar_point = removal_ground(lidar_point,20)
     lidar_polar = car2polar(lidar_point)
-    #lidar_polar = removal_out_lidar(lidar_polar,radar_grid)
     #lidar_points N*5 r,theta,z,i,id
 
     return lidar_polar,radar_point,lidar_point,radar_car
@@ -174,8 +168,6 @@ def orr_dataloader_v1(lidar_root_dir,radar_root_dir):
     
     filenames = os.listdir(radar_root_dir)
     file_number = len(filenames)
-    polar_maxCoord = [100,360,5]
-    polar_minCoord = [0,0,-3]
     maxRange = 95
     lidar_polars = []
     radar_points = []
@@ -200,7 +192,6 @@ def orr_dataloader_v1(lidar_root_dir,radar_root_dir):
         ## read lidar ##
         lidar_point = read_lidar(lidar_path)
         lidar_point = set_lidar_boundary(lidar_point, maxRange)
-        #lidar_point = removal_ground(lidar_point,20)
         lidar_polar = car2polar(lidar_point)
         #lidar_polar = removal_out_lidar(lidar_polar,radar_grid)
         #lidar_points N*5 r,theta,z,i,id
@@ -233,21 +224,20 @@ def read_orr_data_one_frame(n,filenames,lidar_root_dir,radar_root_dir,maxRange):
     ## read lidar ##
     lidar_point = read_lidar(lidar_path)
     lidar_point = set_lidar_boundary(lidar_point, maxRange)
-    #lidar_point = removal_ground(lidar_point,20)
     lidar_polar = car2polar(lidar_point)
     #lidar_polar = removal_out_lidar(lidar_polar,radar_grid)
     #lidar_points N*5 r,theta,z,i,id
 
     return lidar_polar,radar_point,lidar_point,radar_car
-    
+
+   
 
 def orr_dataloader(lidar_root_dir,radar_root_dir):
-    
     filenames = os.listdir(radar_root_dir)
     file_number = len(filenames)
     maxRange = 95
     
-    data = Parallel(n_jobs = 1)(delayed(read_orr_data_one_frame)(n,filenames,lidar_root_dir,radar_root_dir,maxRange) for n in range(file_number))
+    data = Parallel(n_jobs = 4)(delayed(read_orr_data_one_frame)(n,filenames,lidar_root_dir,radar_root_dir,maxRange) for n in range(file_number))
     lidar_polars = [item[0] for item in data]
     radar_points=[item[1] for item in data]
     lidar_points=[item[2] for item in data]

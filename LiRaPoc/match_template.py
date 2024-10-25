@@ -1,19 +1,10 @@
 import numpy as np
-import scipy.optimize as opt
-import os
-import struct
-from draw_fig import *
-from cost import *
+from bev_utils import bev
 import cv2
     
 def match_template(lidars,radars):
     frames = len(lidars)
-    # matrixs = np.zeros((4,4))
-    # T = np.zeros(3)
-    # R = np.zeros(3)
     trans = np.zeros(2)
-    # R[2] = 180
-    # lidar_transforms,_ = transform_lidar(lidars,T,R)
     for i in range(frames):
         lidar = lidars[i]
         radar = radars[i]
@@ -27,8 +18,10 @@ def match_template(lidars,radars):
         print(maxLoc)
         trans = trans+maxLoc
     trans = trans/frames
-    print("all")
-    print(trans)
+    trans = trans * 0.4
+    print("match template")
+    print("x",trans[1] )
+    print("y",trans[0])
     return trans
         
     
